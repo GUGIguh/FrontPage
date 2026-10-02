@@ -1,0 +1,23 @@
+{
+  "name": "frontpage",
+  "version": "1.0.0",
+  "description": "Build a customizable content aggregator that pulls RSS and Atom feeds into a single, well-designed reading dashboard. Your personalized front page for tech content.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GUGIguh/FrontPage.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/GUGIguh/FrontPage/issues"
+  },
+  "homepage": "https://github.com/GUGIguh/FrontPage#readme",
+  "private": true,
+  "workspaces": ["frontend","backend"]
+}

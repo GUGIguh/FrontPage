@@ -27,12 +27,15 @@ This is a learning sandbox. The developer writes the code.
 - Specs in `spec/` define WHAT to build; the developer decides HOW
 - Design-it-yourself features: ask clarifying questions, do not decide for the developer
 - `guidance/brand-kit.md` and `starter/tokens.css` are the design source of truth
+- ALWAYS explain any code, command, or config you show: what each non-obvious part does
+  (flags, options, arguments), why it is needed, and what happens implicitly (files created
+  or changed, side effects, defaults). Never give a bare command or snippet without this
 
 Encourage documenting significant design and product choices in the README. Aim for accessible, semantic, responsive-first code with clean component boundaries.
 
 ## Decisions
 
-- Monorepo: `client/` (React + Vite + TS) and `server/` (Express + TS), npm workspaces
+- Monorepo: `frontend/` (React + Vite + TS) and `backend/` (Express + TS), npm workspaces
 - Database: PostgreSQL via `pg` (raw SQL), local Postgres in Docker
 - Auth: session cookies (httpOnly), bcrypt; password reset link logged to console in dev
 - State: Redux Toolkit + RTK Query; routing: React Router
