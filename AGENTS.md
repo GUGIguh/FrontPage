@@ -36,12 +36,42 @@ Encourage documenting significant design and product choices in the README. Aim 
 ## Decisions
 
 - Monorepo: `frontend/` (React + Vite + TS) and `backend/` (Express + TS), npm workspaces
-- Database: PostgreSQL via `pg` (raw SQL), local Postgres in Docker
+- Database: PostgreSQL in Docker (`docker-compose.yml`), accessed via Prisma ORM 7 — chosen for
+  real-job experience. `backend/src/db/schema.sql` was the reviewed baseline: it is copied into
+  `backend/prisma/migrations/0_init` (marked applied with `migrate resolve`); all later changes go
+  through `prisma migrate dev`. `schema.sql` is kept only as history, not as a source of truth
+- Prisma setup: `backend/prisma.config.ts` loads the root `.env` (run prisma from `backend/`);
+  client generated to `backend/src/generated/prisma` (gitignored, `prisma generate`); runtime
+  connects through `@prisma/adapter-pg`. Models are PascalCase singular with camelCase fields,
+  mapped to snake_case tables/columns via `@map`/`@@map`
+- Prisma gaps, hand-edit the migration SQL: `on delete set null (category_id)` on the composite FK
+  in `subscriptions` (must not null `user_id`), `citext` extension. The `SetNull` warning from
+  `prisma validate` on that relation is expected
+- Data model: feeds and entries are shared by all users (one row per feed URL); per-user state
+  lives in `subscriptions`, `categories`, `read_entries`, `bookmarks`. Category ownership is
+  enforced by the DB via composite FK `(category_id, user_id)`
+- Entries: dedup by `unique (feed_id, guid)`; the loader must fill `guid` (fallback: url, then hash),
+  `title`, and `published_at` (fallback: fetch time), so these stay `not null`
+- Cleanup of old entries must skip bookmarked ones (cascade would delete the bookmark)
+- Deferred tables: password reset tokens and user settings, added as migrations at the auth/UI stage
+- Build order: feed → loader → entries API (temporary hardcoded user) → minimal frontend → auth
 - Auth: session cookies (httpOnly), bcrypt; password reset link logged to console in dev
 - State: Redux Toolkit + RTK Query; routing: React Router
 - Styles: SCSS Modules + `starter/tokens.css` as CSS custom properties. No Tailwind
 - Tokens stay CSS variables (runtime theming); SCSS only for mixins, nesting, partials
 - Dev: Vite `server.proxy` for `/api`; prod: Express serves the built client (same origin)
+
+## Agent skills
+
+`.claude/skills/` holds two Prisma 7 reference skills from `github.com/prisma/skills`
+(installed by `prisma init`, the rest removed as irrelevant):
+- `prisma-cli` — CLI commands (migrate, db pull/execute, generate, seed) and the consent rule
+  for destructive commands (`migrate reset`, `db push --accept-data-loss`)
+- `prisma-client-api` — query API (findMany, include, filters, cursor pagination, transactions)
+
+Use them as up-to-date API reference; the collaboration rules above still win (hints over
+full solutions). Their examples use `import 'dotenv/config'` — this project loads the root
+`.env` explicitly instead. Use `prisma init --no-skills` if init is ever re-run.
 
 ## Learning focus
 
